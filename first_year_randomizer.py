@@ -21,7 +21,7 @@ class FirstYears:
 
         self.people.append(new_person)
 
-    def check_team_balance(self, teams, error_margin, ideal_parameters):
+    def check_team_balance(self, teams, error_margins, ideal_parameters):
         team_balances = [ {} for team in teams]
         for parameter in self.parameters:
             for i, team in enumerate(teams):
@@ -35,16 +35,18 @@ class FirstYears:
                 balance = float(true_count) / float(true_count+false_count)
                 team_balances[i][parameter] = balance
 
-                if abs(ideal_parameters[parameter]-balance) > error_margin:
-                    # print 'Team has parameter ratio %.2f for parameter %s; exceeds allowed margin of %.2f' % (abs(ideal_parameters[parameter]-balance), parameter, error_margin)
-                    return None
+                if abs(ideal_parameters[parameter]-balance) > error_margins[parameter]:
+                    # print 'Team has parameter ratio %.2f for parameter %s; exceeds allowed margin of %.2f' % (abs(ideal_parameters[parameter]-balance), parameter, error_margins[parameter])
+                    error_margins[parameter] += 0.0001 # Controls convergence pace
+                    return (None, False, error_margins)
 
-        return team_balances
+        return (team_balances, True, error_margins)
 
-    def make_teams(self, num_teams, error_margin=0.01):
-        error_margin = 0.01 # Percent deviation allowed from ideal gender/program/etc ratio
+    def make_teams(self, num_teams, starting_error_margin=0.01):
         ideal_parameters = {}
+        error_margins = {}
         for parameter in self.parameters:
+            error_margins[parameter] = starting_error_margin
             true_count = 0
             false_count = 0
             for person in self.people:
@@ -54,16 +56,13 @@ class FirstYears:
                     false_count += 1
             ideal_parameters[parameter] = float(true_count) / float(true_count+false_count)
         
-        while(True):
+        solution_found = False
+        while(not solution_found):
             people = random.sample(self.people, len(self.people))
             teams = [ [] for x in xrange(num_teams) ]
             for i, person in enumerate(people):
                 teams[ i % len(teams) ].append(person)
-            team_balances = self.check_team_balance(teams, error_margin, ideal_parameters)
-            if team_balances:
-                break
-            else:
-                error_margin += 0.00001 # This controls how fast a solution will be found
+            team_balances, solution_found, error_margins = self.check_team_balance(teams, error_margins, ideal_parameters)
 
         for i, team in enumerate(teams):
             print 'Team %d:' % (i+1)
