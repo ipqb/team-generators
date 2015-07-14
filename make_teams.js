@@ -19,9 +19,11 @@ function shuffle(o){ //v1.0
 };  
 
 var peopleNames = [
-  "Tyler", "Stefan", "Ina", "Evan", "Elena",
-  "Leanna", "Meena", "Seth", "Marco", "Eugene",
-  "Weiyue", "Rachel", "Lillian"
+  "Douglas", "Ruilin", "Rachel", "Tamas",
+  "Daniel", "Paul", "Cole", "David",
+  "Nadja", "Charlotte", "Alexander",
+  "Yuliya", "Pooja",
+  "Nathan", "Derek"
 ];
   
   function makeGroupSize(form) {
